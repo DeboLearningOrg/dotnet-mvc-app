@@ -1,0 +1,46 @@
+trigger:
+    - master
+    
+pool:
+    name: Azure Pipelines
+    vmImage: 'vs2017-win2016'
+    demands:
+        - msbuild
+        - visualstudio
+
+variables:
+    BuildConfiguration: 'Release'
+    BuildPlatform: 'any cpu'
+    SolutionDir: 'dotnetMVCWebapp.sln'
+
+steps:
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet 4.4.1'
+      inputs:
+        versionSpec: 4.4.1
+
+    - task: NuGetCommand@2
+      displayName: 'NuGet restore'
+      inputs:
+        restoreSolution: $(SolutionDir)
+
+    - task: VSBuild@1
+      displayName: 'Build solution'
+      inputs:
+        solution: $(SolutionDir)
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactstagingdirectory)\\"'
+        platform: '$(BuildPlatform)'
+        configuration: '$(BuildConfiguration)'
+        clean: true
+
+    - task: PublishSymbols@2
+      displayName: 'Publish symbols path'
+      inputs:
+        SearchPattern: '**\bin\**\*.pdb'
+        PublishSymbols: false
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+        ArtifactName: 'drop'
