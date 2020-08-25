@@ -39,8 +39,8 @@ steps:
         SearchPattern: '**\bin\**\*.pdb'
         PublishSymbols: false
 
-    - task: CopeFiles@2
-      displayName: 'Cope files to: Staging Directory'
+    - task: CopyFiles@2
+      displayName: 'Copy files to: Staging Directory'
       inputs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**\bin\$(BuildConfiguration)\**'
