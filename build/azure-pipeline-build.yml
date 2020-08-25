@@ -39,6 +39,13 @@ steps:
         SearchPattern: '**\bin\**\*.pdb'
         PublishSymbols: false
 
+    - task: CopeFiles@2
+      displayName: 'Cope files to: Staging Directory'
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**\bin\$(BuildConfiguration)\**'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
       inputs:
